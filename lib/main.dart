@@ -1,15 +1,22 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:ulearning/app_blocks.dart';
 import 'package:ulearning/app_events.dart';
+import 'package:ulearning/pages/sign_in/bloc/singin_blocs.dart';
 import 'package:ulearning/pages/sign_in/sign_in.dart';
 import 'package:ulearning/pages/welcome/block/welcome_bloc.dart';
 import 'package:ulearning/pages/welcome/welcome.dart';
+import 'package:firebase_core/firebase_core.dart';
 
 import 'app_states.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  await Firebase.initializeApp();
+
   runApp(const MyApp());
 }
 
@@ -20,34 +27,32 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
-      
-      providers: [
-        BlocProvider(
-          create: (context) => WelcomeBloc(),
-        ),
-        BlocProvider(
-          // lazy: false,
-          create: (context) => AppBlocks(),
-        )
-      ],
-      child: ScreenUtilInit(
-        builder: (context, child)=> MaterialApp(
+        providers: [
+          BlocProvider(
+            create: (context) => WelcomeBloc(),
+          ),
+          BlocProvider(
+            // lazy: false,
+            create: (context) => AppBlocks(),
+          ),
+          BlocProvider(create: (context)=> SignInBloc())
+        ],
+        child: ScreenUtilInit(
+          builder: (context, child) => MaterialApp(
             debugShowCheckedModeBanner: false,
             title: 'Flutter Demo',
             theme: ThemeData(
-              appBarTheme: const AppBarTheme(
-                elevation: 0,
-                backgroundColor: Colors.white,
-              )
-            ),
+                appBarTheme: const AppBarTheme(
+              elevation: 0,
+              backgroundColor: Colors.white,
+            )),
             home: const Welcome(),
             routes: {
-              "myHomePage":(context) => const MyHomePage(),
-              "signIn":(context) => const SignIn(),
+              "myHomePage": (context) => const MyHomePage(),
+              "signIn": (context) => const SignIn(),
             },
           ),
-      )
-    );
+        ));
   }
 }
 
